@@ -2,17 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Inject,
   inject,
   Input,
   Output,
 } from '@angular/core';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MaterialModule } from '../../material/material.module';
+import { MemoryService } from '../../services/memory.service';
+import { PalindromeWord } from '../../services/memory.service';
+import { PopupWindowComponent } from '../popup-window/popup-window.component';
 
 @Component({
   selector: 'app-button',
@@ -27,8 +25,14 @@ export class ButtonComponent {
   wordWithoutSpaces: string = '';
   palindrome: string = '';
   outputText: string = '';
+  palindromeAnswer: PalindromeWord = {
+    toBeAnswer: '',
+    wordWithoutSpaces: '',
+    palindrome: '',
+  };
   @Input() word: string = '';
   @Output() emitter = new EventEmitter<string>();
+  constructor(private memoryService: MemoryService) {}
 
   palindromeFunction() {
     this.wordWithoutSpaces = '';
@@ -48,6 +52,12 @@ export class ButtonComponent {
       this.outputText = 'IS NOT';
       this.emitter.emit(`${this.word} -> No`);
     }
+    this.palindromeAnswer = {
+      toBeAnswer: this.outputText,
+      wordWithoutSpaces: this.wordWithoutSpaces,
+      palindrome: this.palindrome,
+    };
+    this.memoryService.writeObject(this.palindromeAnswer);
     this.openDialog('300ms', '300ms');
   }
 
@@ -55,30 +65,10 @@ export class ButtonComponent {
     enterAnimationDuration: string,
     exitAnimationDuration: string
   ): void {
-    this.dialog.open(DialogAnimationsExampleDialog, {
+    this.dialog.open(PopupWindowComponent, {
       width: '250px',
       enterAnimationDuration,
       exitAnimationDuration,
-      data: {
-        toBeAnswer: this.outputText,
-        word: this.wordWithoutSpaces,
-        palindrome: this.palindrome,
-      },
     });
   }
-}
-
-@Component({
-  selector: 'dialog-animations-example-dialog',
-  templateUrl: 'dialog.button.html',
-  standalone: true,
-  imports: [MaterialModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class DialogAnimationsExampleDialog {
-  readonly dialogRef = inject(MatDialogRef<DialogAnimationsExampleDialog>);
-  constructor(
-    @Inject(MAT_DIALOG_DATA)
-    public data: { toBeAnswer: string; word: string; palindrome: string }
-  ) {}
 }
