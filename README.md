@@ -1,4 +1,8 @@
-# PrimeraPractica
+# First Practice Angular I
+
+## Robert Steven Delgado Peralta
+
+### Software Development - Parquesoft TI
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.7.
 
